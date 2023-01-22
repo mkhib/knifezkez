@@ -25,7 +25,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "tech.mkstudio.knifezkez"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
