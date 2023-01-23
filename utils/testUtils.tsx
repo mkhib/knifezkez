@@ -1,11 +1,15 @@
 import { ReactNode } from "react";
-import { ApplicationProvider } from "@ui-kitten/components";
+import { ApplicationProvider, IconRegistry } from "@ui-kitten/components";
 import * as eva from "@eva-design/eva";
+import { EvaIconsPack } from "@ui-kitten/eva-icons";
 
 export const wrapInUiKittenApplicationProvider = (component: ReactNode) => {
   return (
-    <ApplicationProvider {...eva} theme={eva.light}>
-      {component}
-    </ApplicationProvider>
+    <>
+      <IconRegistry icons={EvaIconsPack} />
+      <ApplicationProvider {...eva} theme={eva.light}>
+        {component}
+      </ApplicationProvider>
+    </>
   );
 };

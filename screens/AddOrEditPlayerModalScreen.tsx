@@ -1,16 +1,22 @@
 import { StyleSheet, View } from "react-native";
 import { Input, Button } from "@ui-kitten/components";
 import { usePlayersStore } from "../zustand/usePlayersStore";
-import { useCallback } from "react";
+import { FC, useCallback } from "react";
+import { RootStackScreenProps } from "../types";
 
-const AddOrEditPlayerModalScreen = () => {
+const AddOrEditPlayerModalScreen: FC<
+  RootStackScreenProps<"AddOrEditPlayerModal">
+> = ({ navigation }) => {
   const { id, name, overallPoints } = usePlayersStore(
     (state) => state.playerToAddOrEdit
   );
 
+  const addOrEditPlayer = usePlayersStore((state) => state.addOrEditPlayer);
   const setPlayerName = usePlayersStore((state) => state.setPlayerName);
-
   const setPlayerPoints = usePlayersStore((state) => state.setPlayerPoints);
+  const clearPlayerToAddOrEdit = usePlayersStore(
+    (state) => state.clearPlayerToAddOrEdit
+  );
 
   const handleSettingPlayerName = useCallback(
     (name: string) => setPlayerName(name),
@@ -21,6 +27,12 @@ const AddOrEditPlayerModalScreen = () => {
     (points: string) => setPlayerPoints(points),
     []
   );
+
+  const handleAddOrEditPlayer = useCallback(() => {
+    addOrEditPlayer();
+    clearPlayerToAddOrEdit();
+    navigation.goBack();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -39,7 +51,7 @@ const AddOrEditPlayerModalScreen = () => {
         onChangeText={handleSettingPlayerPoints}
       />
 
-      <Button>{id ? "Edit" : "Add"}</Button>
+      <Button onPress={handleAddOrEditPlayer}>{id ? "Edit" : "Add"}</Button>
     </View>
   );
 };

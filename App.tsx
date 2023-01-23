@@ -7,6 +7,9 @@ import Navigation from "./navigation";
 import { ApplicationProvider, IconRegistry } from "@ui-kitten/components";
 import * as eva from "@eva-design/eva";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
+import { enableMapSet } from "immer";
+
+enableMapSet();
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
