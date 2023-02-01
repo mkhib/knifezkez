@@ -9,6 +9,7 @@ import { ColorSchemeName } from "react-native";
 
 import AddOrEditPlayerModalScreen from "../screens/AddOrEditPlayerModalScreen";
 import PlayersScreen from "../screens/PlayersScreen";
+import TeamsScreen from "../screens/TeamsScreen";
 import { RootStackParamList } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
 
@@ -33,6 +34,7 @@ function RootNavigator() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Players" component={PlayersScreen} />
+      <Stack.Screen name="Teams" component={TeamsScreen} />
       <Stack.Group
         screenOptions={{ presentation: "modal", headerTitle: "Player" }}
       >

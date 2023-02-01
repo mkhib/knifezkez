@@ -17,11 +17,11 @@ const Player: FC<PlayerProps> = ({
 
   const handlePlayerBeingInMatchStatusChange = useCallback(() => {
     onPlayerBeingInMatchStatusChange?.(id);
-  }, []);
+  }, [player]);
 
   const handleOnPressEditPlayer = useCallback(() => {
     onPressEditPlayer?.(player);
-  }, []);
+  }, [player]);
 
   return (
     <View style={styles.container}>

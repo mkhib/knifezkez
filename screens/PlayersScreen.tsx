@@ -1,4 +1,4 @@
-import { Input, List, Button } from "@ui-kitten/components";
+import { Input, List, Button, Text } from "@ui-kitten/components";
 import { useCallback, useMemo } from "react";
 import Player from "../components/Player";
 import { PlayerType, usePlayersStore } from "../zustand/usePlayersStore";
@@ -14,22 +14,53 @@ const PlayersScreen = ({ navigation }: RootStackScreenProps<"Players">) => {
     (state) => state.selectedPlayersForTheMatch
   );
   const setPlayerToEdit = usePlayersStore((state) => state.setPlayerToEdit);
+  const clearPlayerToAddOrEdit = usePlayersStore(
+    (state) => state.clearPlayerToAddOrEdit
+  );
+  const playersSearchTerm = usePlayersStore((state) => state.playersSearchTerm);
+  const setPlayersSearchTerm = usePlayersStore(
+    (state) => state.setPlayersSearchTerm
+  );
+  const createRange = usePlayersStore((state) => state.createRange);
+  const removeAllPlayersFromTheMatch = usePlayersStore(
+    (state) => state.removeAllPlayersFromTheMatch
+  );
+
+  const handleCreateRange = useCallback(() => {
+    createRange();
+    navigation.navigate("Teams");
+  }, []);
+
+  const disableCreateRange = useMemo(() => {
+    if (selectedPlayersForTheMatch.length !== 10) return true;
+    return false;
+  }, [selectedPlayersForTheMatch]);
 
   const handlePlayersData = useMemo(() => {
-    return Object.entries(players).map((entry) => {
-      return entry[1];
-    });
-  }, [players]);
+    return Object.entries(players)
+      .filter((entry) => {
+        return entry[1].name
+          .toLowerCase()
+          .includes(playersSearchTerm.toLowerCase());
+      })
+      .map((entry) => {
+        return entry[1];
+      });
+  }, [players, playersSearchTerm]);
 
   const handleListDataKey = useCallback(
     (player: PlayerType) => player.id,
     [players]
   );
 
-  const handleSetPlayerToEdit = useCallback((player: PlayerType) => {
-    setPlayerToEdit(player);
-    navigation.navigate("AddOrEditPlayerModal");
-  }, []);
+  const handleSetPlayerToEdit = useCallback(
+    (player: PlayerType) => {
+      console.log("player", player);
+      setPlayerToEdit(player);
+      navigation.navigate("AddOrEditPlayerModal");
+    },
+    [players]
+  );
 
   const renderPlayerItem = useCallback(
     ({ item }: { item: PlayerType }) => {
@@ -46,25 +77,55 @@ const PlayersScreen = ({ navigation }: RootStackScreenProps<"Players">) => {
   );
 
   const handleOnAddPlayerPress = useCallback(() => {
+    clearPlayerToAddOrEdit();
     navigation.navigate("AddOrEditPlayerModal");
   }, []);
 
   return (
     <List
+      keyboardShouldPersistTaps="handled"
       contentContainerStyle={styles.contentContainer}
       ListHeaderComponent={
-        <View>
+        <View style={styles.headerContainer}>
           {Object.keys(players).length > 0 && (
-            <Input placeholder="Search Player" />
+            <Input
+              style={{
+                marginTop: 10,
+              }}
+              value={playersSearchTerm}
+              clearButtonMode="always"
+              onChangeText={setPlayersSearchTerm}
+              placeholder="Search Player"
+            />
           )}
+          <View style={styles.modifyPlayersContainer}>
+            <Button
+              style={styles.addPlayerButton}
+              onPress={handleOnAddPlayerPress}
+              appearance="outline"
+            >
+              <Text>Add Player</Text>
+            </Button>
+            <Button
+              appearance="ghost"
+              style={styles.clearSelectedPlayersButton}
+              onPress={removeAllPlayersFromTheMatch}
+            >
+              <Text>Clear Selection</Text>
+            </Button>
+          </View>
+
           <Button
-            style={styles.addPlayerButton}
-            onPress={handleOnAddPlayerPress}
+            style={styles.rangeButton}
+            disabled={disableCreateRange}
+            onPress={handleCreateRange}
           >
-            Add Player
+            <Text>Create Range {`(${selectedPlayersForTheMatch.length})`}</Text>
           </Button>
         </View>
       }
+      stickyHeaderIndices={[0]}
+      showsVerticalScrollIndicator={false}
       data={handlePlayersData}
       keyExtractor={handleListDataKey}
       renderItem={renderPlayerItem}
@@ -75,10 +136,27 @@ const PlayersScreen = ({ navigation }: RootStackScreenProps<"Players">) => {
 export default PlayersScreen;
 
 const styles = StyleSheet.create({
+  headerContainer: {
+    backgroundColor: "white",
+  },
   contentContainer: {
-    padding: 10,
+    paddingHorizontal: 10,
   },
   addPlayerButton: {
     marginVertical: 10,
+    flex: 1.5,
+  },
+  rangeButton: {
+    marginBottom: 10,
+  },
+
+  modifyPlayersContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  clearSelectedPlayersButton: {
+    marginLeft: 10,
+    flex: 1,
   },
 });
